@@ -1,0 +1,1 @@
+python stage1.py --root 'data/PubChem324kSP/' --gtm --lm --devices '1,' --mode train --filename stage1 --rerank_cand_num 128 --num_query_token 8 --tune_gnn --precision 32 --batch_size 32 --max_epochs 50
