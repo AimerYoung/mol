@@ -1,0 +1,39 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+from pytorch_lightning import LightningDataModule
+import torch
+from torch.nn import functional as F
+import torch_geometric
+from data_provider.pretrain_dataset import GINPretrainDataset
+
+
+class GINPretrainDataModule(LightningDataModule):
+    def __init__(
+        self,
+        num_workers: int = 0,
+        batch_size: int = 32,
+        root: str = '/home/zhongcl/M_T_Data/PubChem324kV2/',
+        text_max_len: int = 256,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        self.dataset = GINPretrainDataset(root, text_max_len)
+
+    def setup(self, stage: str = None):
+        self.train_dataset = self.dataset
+
+    def train_dataloader(self):
+        loader = torch_geometric.loader.DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
+            pin_memory=False,
+            drop_last=True,
+            # persistent_workers = True
+        )
+        print('len(train_dataloader)', len(loader))
+        return loader
